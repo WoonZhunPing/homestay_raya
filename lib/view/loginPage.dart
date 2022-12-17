@@ -18,7 +18,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  bool _obscureText = false;
+  bool _obscureText = true;
   final focusEmail = FocusNode();
   final focusPass = FocusNode();
   final TextEditingController _emailEditingController = TextEditingController();
@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                                 side: const BorderSide(color: Colors.white))),
                       ),
                       onPressed: goHomePage,
-                      child: const Text("Sign Up",
+                      child: const Text("Sign In",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.white,
