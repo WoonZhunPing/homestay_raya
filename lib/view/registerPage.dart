@@ -2,11 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:homestay_raya/view/loginPage.dart';
 import 'package:http/http.dart' as http;
+import 'package:ndialog/ndialog.dart';
 
 import '../config.dart';
-
-
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -262,7 +262,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               borderRadius: BorderRadius.circular(18.0),
                               side: const BorderSide(color: Colors.white))),
                     ),
-                   onPressed: _registerButton,
+                    onPressed: _registerButton,
                     child: const Text("Sign In",
                         style: TextStyle(
                           fontSize: 16,
@@ -277,29 +277,31 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-   void _registerButton() {
-     if (!_formKey.currentState!.validate()) {
+
+  void _registerButton() {
+    if (!_formKey.currentState!.validate()) {
       Fluttertoast.showToast(
-        msg: "Incompleted registration form",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        textColor: Colors.greenAccent,
-        timeInSecForIosWeb: 1,
-        fontSize: 20.0);
-         return;
-  }
-  if(!_isChecked){
-    Fluttertoast.showToast(
+          msg: "Incompleted registration form",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          textColor: Colors.greenAccent,
+          timeInSecForIosWeb: 1,
+          fontSize: 20.0);
+      return;
+    }
+    if (!_isChecked) {
+      Fluttertoast.showToast(
         msg: "Please accept the Terms and Conditions",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         textColor: Colors.greenAccent,
         timeInSecForIosWeb: 1,
-        fontSize: 20.0,);
-         return;
-  }
+        fontSize: 20.0,
+      );
+      return;
+    }
 
-  showDialog(
+    showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -307,8 +309,8 @@ class _RegisterPageState extends State<RegisterPage> {
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           title: const Text(
             "Register new account?",
-             style: TextStyle(
-               fontSize: 16,
+            style: TextStyle(
+              fontSize: 16,
             ),
           ),
           content: const Text("Are you sure?",
@@ -320,19 +322,19 @@ class _RegisterPageState extends State<RegisterPage> {
               child: const Text(
                 "Yes",
                 style: TextStyle(
-                    fontSize: 14,
+                  fontSize: 14,
                 ),
               ),
               onPressed: () {
                 Navigator.of(context).pop();
-                 _registerUserAccount();
+                _registerUserAccount();
               },
             ),
             TextButton(
               child: const Text(
                 "No",
                 style: TextStyle(
-                    fontSize: 14,
+                  fontSize: 14,
                 ),
               ),
               onPressed: () {
@@ -343,7 +345,6 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       },
     );
-     
   }
 
   void _registerUserAccount() {
@@ -353,34 +354,45 @@ class _RegisterPageState extends State<RegisterPage> {
     String pass = _passEditingController.text;
     http.post(Uri.parse("${Config.server}/homestay/php/register_user.php"),
         body: {
-          "name": name, 
-          "email": email, 
+          "name": name,
+          "email": email,
           "password": pass,
-          })
-    .then((response) {
-       var data = jsonDecode(response.body);
-      if(response.statusCode == 200 &&  data['status'] == 'success'){
+        }).then((response) {
+      var data = jsonDecode(response.body);
+      if (response.statusCode == 200 && data['status'] == 'success') {
+         Fluttertoast.showToast(
+              msg: "Registeration Success",
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 1,
+              fontSize: 20.0,
+            );
 
-       Fluttertoast.showToast(
-        msg: "Registeration Success",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        fontSize: 20.0,);
-         return;
-
-      }else{
-
+        ProgressDialog progressDialog = ProgressDialog(context,
+            message: const Text("Redirecting to Login Page...."),
+            title: const Text("Register Success"));
+        progressDialog.show();
+        Future.delayed(const Duration(seconds: 3)).then(
+          (value) {
+           
+            progressDialog.dismiss();
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (BuildContext context) => const LoginPage()));
+          },
+        );
+        return;
+      } else {
         Fluttertoast.showToast(
-        msg: "Registeration Failed",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        fontSize: 20.0,);
-         return;
+          msg: "Registeration Failed",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          fontSize: 20.0,
+        );
+        return;
       }
     });
-
-}
-
+  }
 }
